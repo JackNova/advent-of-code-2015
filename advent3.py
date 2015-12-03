@@ -46,6 +46,11 @@ def walk_path(path):
 		previous = x
 	return visited_houses
 
+def walk_path_split(path):
+	santa_path = path[::2]
+	robo_santa_path = path[1::2]
+
+	return walk_path(santa_path) + walk_path(robo_santa_path)
 
 # For example:
 
@@ -63,4 +68,28 @@ assert len(set(walk_path('^v^v^v^v^v'))) == 2
 
 print len(set(walk_path(input)))
 
+
+# The next year, to speed up the process, Santa creates a robot version of himself,
+# Robo-Santa, to deliver presents with him.
+
+# Santa and Robo-Santa start at the same location (delivering two presents to the same starting house),
+# then take turns moving based on instructions from the elf, who is eggnoggedly reading
+# from the same script as the previous year.
+
+# This year, how many houses receive at least one present?
+
+# For example:
+
+# ^v delivers presents to 3 houses, because Santa goes north, and then Robo-Santa goes south.
+test1 = '^v'
+assert len(set(walk_path_split(test1))) == 3;
+# ^>v< now delivers presents to 3 houses, and Santa and Robo-Santa end up back where they started.
+test2 = '^>v<'
+assert len(set(walk_path_split(test2))) == 3;
+# ^v^v^v^v^v now delivers presents to 11 houses, with Santa going one direction and Robo-Santa going the other.
+test3='^v^v^v^v^v'
+assert len(set(walk_path_split(test3))) == 11;
+
+
+print len(set(walk_path_split(input)))
 
