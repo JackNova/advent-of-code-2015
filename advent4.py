@@ -12,7 +12,6 @@
 # that produces such a hash.
 
 import md5
-import binascii
 import itertools
 
 
@@ -20,7 +19,7 @@ def mine(n, secret):
 	x = secret+str(n)
 	m = md5.new()
 	m.update(x)
-	return binascii.hexlify(m.digest())
+	return m.hexdigest()
 
 # For example:
 
