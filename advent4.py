@@ -43,4 +43,4 @@ result = next(x for x in itertools.count(start=1, step=1) if mine(x, secret).sta
 print "result for first part of the quiz is following: %s" % result
 
 result2 = next(x for x in itertools.count(start=1, step=1) if mine(x, secret).startswith('0'*6))
-print "result for first part of the quiz is following: %s" % result2
+print "result for second part of the quiz is following: %s" % result2
