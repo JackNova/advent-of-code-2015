@@ -47,9 +47,11 @@
 
 with open('input.txt', 'r') as f: input = f.read().splitlines()
 
-operators = ['NOT', 'AND', 'OR', 'LSHIFT', 'RSHIFT', '->']
-
 def as_topology(expression):
+	""" This is the adapter needed in topological_sort
+	returns a tuple of kind ``(name, [list of dependancies])``
+	"""
+	operators = ['NOT', 'AND', 'OR', 'LSHIFT', 'RSHIFT', '->']
 
 	def is_dependency(token):
 		return token not in operators and not token.isdigit()
@@ -59,20 +61,18 @@ def as_topology(expression):
 	dependancies = [d for d in tokens[:-2] if is_dependency(d)]
 	return (name, dependancies)
 
-topological_input = [as_topology(x) for x in input]
-
 def topological_sort(source, adapter):
     """perform topo sort on elements.
     similar to https://en.wikipedia.org/wiki/Topological_sorting
+    http://stackoverflow.com/questions/11557241/python-sorting-a-dependency-list
 
 	:arg adapter: should transform the source in a list of ``(name, [list of dependancies])`` pairs
     :arg source: the original list
     :returns: the original source, with dependancies listed first
     """
     pending = [(adapter(x), x) for x in source]
-    print pending
     pending = [(name, set(deps), original) for (name, deps), original in pending]
-    # pending = [(name, set(deps)) for name, deps in source] # copy deps so we can modify set in-place       
+    # copy deps so we can modify set in-place       
     emitted = []        
     while pending:
         next_pending = []
@@ -91,16 +91,10 @@ def topological_sort(source, adapter):
         pending = next_pending
         emitted = next_emitted
 
-# for x in input:
-# 	print as_topology(x)
-
 sorted_input = topological_sort(input, as_topology)
 
 for x in sorted_input:
 	print x
-
-def dependency_compare(exp1, exp2):
-	pass
 
 
 
