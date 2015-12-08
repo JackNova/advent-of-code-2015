@@ -62,5 +62,22 @@ print sum(diff(x) for x in input)
 # Your task is to find the total number of characters to represent the newly encoded 
 # strings minus the number of characters of code in each original string literal. 
 # For example, for the strings above, the total encoded length (6 + 9 + 16 + 11 = 42) 
-#minus the characters in the original code representation (23, just like in the first part of this puzzle)
+# minus the characters in the original code representation (23, just like in the first part of this puzzle)
 # is 42 - 23 = 19.
+
+import json
+
+with open('test.txt', 'r') as f: input = f.read().splitlines()
+
+def diff(x):
+	length = len(x)
+	encoded_string = json.dumps( x )
+	encoded_length = len(encoded_string)
+	# print "raw lenght %s - escaped length: %s (%s, %s)" % (length, encoded_length, x, encoded_string)
+	return  encoded_length - length
+
+print sum(diff(x) for x in input)
+
+with open('input.txt', 'r') as f: input = f.read().splitlines()
+
+print sum(diff(x) for x in input)
