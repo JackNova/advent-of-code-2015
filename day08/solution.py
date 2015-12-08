@@ -38,18 +38,11 @@ with open('test.txt', 'r') as f: input = f.read().splitlines()
 def diff(x):
 	length = len(x)
 	raw_length = len(x.decode('string-escape'))-2
-	#print "raw lenght %s - escaped length: %s" % (len(x), raw_length)
 	return length - raw_length
 
 print sum(diff(x) for x in input)
 
 with open('input.txt', 'r') as f: input = f.read().splitlines()
-
-def diff(x):
-	length = len(x)
-	raw_length = len(x.decode('string-escape'))-2
-	#print "raw lenght %s - escaped length: %s" % (len(x), raw_length)
-	return length - raw_length
 
 print sum(diff(x) for x in input)
 
