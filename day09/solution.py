@@ -68,11 +68,11 @@ London to Belfast = 518
 Dublin to Belfast = 141
 """.splitlines()
 
-solve(test_input)
+# solve(test_input)
 
 with open('input.txt', 'r') as f: input = f.read().splitlines()
 
-solve(input)
+# solve(input)
 
 # The possible routes are therefore:
 
@@ -85,3 +85,28 @@ solve(input)
 # The shortest of these is London -> Dublin -> Belfast = 605, and so the answer is 605 in this example.
 
 # What is the distance of the shortest route?
+
+
+
+# --- Part Two ---
+
+# The next year, just to show off, Santa decides to take the route with the longest distance instead.
+
+# He can still start and end at any two (different) locations he wants, and
+# he still must visit each location exactly once.
+
+# For example, given the distances above, the longest route would be 982 via
+# (for example) Dublin -> London -> Belfast.
+
+# What is the distance of the longest route?
+
+def solve2(input):
+	distances = get_distances(input)
+	cities = get_all_cities(input)
+	distances_dd = get_permutations_with_distances(cities, distances)
+
+	sorted_distances = sorted(distances_dd, key=lambda x: x[-1])
+
+	print sorted_distances[-1]
+
+solve2(input)
