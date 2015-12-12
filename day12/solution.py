@@ -1,4 +1,5 @@
 import re
+import json
 # --- Day 12: JSAbacusFramework.io ---
 
 # Santa's Accounting-Elves need help balancing the books after a recent order.
@@ -38,3 +39,40 @@ assert sum_numbers('{}') == 0
 with open('input.txt', 'r') as f: input = f.read()
 print sum_numbers(input)
 
+# --- Part Two ---
+
+# Uh oh - the Accounting-Elves have realized that they double-counted everything red.
+
+# Ignore any object (and all of its children) which has any property with the value "red".
+# Do this only for objects ({...}), not arrays ([...]).
+
+def walk(obj):
+	if type(obj) is list:
+		for x in obj:
+			for val in walk(x):
+				yield val
+	elif type(obj) is dict:
+		if 'red' not in obj.values():
+			for k in obj:
+				for val in walk(obj[k]):
+					yield val
+		else:
+			print 'discarding object %s' % obj
+	else:
+		if type(obj) is int:
+			yield obj
+
+def walk_json(s):
+	obj = json.loads(s)
+	return sum(walk(obj))
+
+# [1,2,3] still has a sum of 6.
+assert walk_json('[1,2,3]') == 6
+# [1,{"c":"red","b":2},3] now has a sum of 4, because the middle object is ignored.
+assert walk_json('[1,{"c":"red","b":2},3]') == 4
+# {"d":"red","e":[1,2,3,4],"f":5} now has a sum of 0, because the entire structure is ignored.
+assert walk_json('{"d":"red","e":[1,2,3,4],"f":5}') == 0
+# [1,"red",5] has a sum of 6, because "red" in an array has no effect.
+assert walk_json('[1,"red",5]') == 6
+
+print walk_json(input)
