@@ -55,15 +55,18 @@ assert get_members(test_input) == set(['Alice', 'Bob', 'Carol', 'David'])
 
 def evaluate_arrangement(arragement, happiness):
 	results = []
+	total_happiness = 0
 	tot = len(arragement)
 	for i in range(0, tot):
 		left = arragement[i-1]
 		me = arragement[i]
 		right = arragement[(i+1)%tot]
-		results.append(happiness['%s-%s'%(me, left)])
-		if right:
-			results.append(happiness['%s-%s'%(me, right)])
-	return list(arragement) + [sum(results)]
+
+		left_happiness = happiness['%s-%s'%(me, left)]
+		right_happiness = happiness['%s-%s'%(me, right)]
+		total_happiness+=(left_happiness+right_happiness)
+		results.append( (left_happiness, me, right_happiness) )
+	return results + [total_happiness]
 
 def find_optimal_arrangement(input):
 	model = [eval_input(i) for i in input.splitlines()]
@@ -71,8 +74,6 @@ def find_optimal_arrangement(input):
 	arrangements = permutations(get_members(input))
 	results = [evaluate_arrangement(a, happiness_dict) for a in arrangements]
 	return max(results, key=itemgetter(-1))
-
-print find_optimal_arrangement(test_input)
 
 # If you continue around the table, you could then seat Bob next to Alice
 # (Bob gains 83, Alice gains 54). Finally, seat Carol, who sits next to Bob
