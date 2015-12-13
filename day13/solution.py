@@ -89,4 +89,51 @@ def find_optimal_arrangement(input):
 # After trying every other seating arrangement in this hypothetical scenario,
 # you find that this one is the most optimal, with a total change in happiness of 330.
 
+test_arrangement = find_optimal_arrangement(test_input)
+assert test_arrangement[-1] == 330
+
+
 # What is the total change in happiness for the optimal seating arrangement of the actual guest list?
+
+with open('input.txt', 'r') as f: input = f.read()
+
+arrangement =  find_optimal_arrangement(input)
+
+# --- Part Two ---
+
+# In all the commotion, you realize that you forgot to seat yourself. At this point,
+# you're pretty apathetic toward the whole thing, and your happiness wouldn't really go up
+# or down regardless of who you sit next to. You assume everyone else would be just
+# as ambivalent about sitting next to you, too.
+
+# So, add yourself to the list, and give all happiness relationships that involve you a score of 0.
+
+# What is the total change in happiness for the optimal seating arrangement that actually includes yourself?
+
+def optimally_add_member(arrangement, member):
+	members = arrangement[0:-1]
+	tot = len(members)
+
+	solutions = []
+
+	compute_happiness = lambda s: sum([l+r for l, _, r in s ])
+
+	for i in range(0, tot):
+		members_copy = list(members)
+		left = list(members[i-1])
+		left[-1] = 0
+		members_copy[i-1] = tuple(left)
+		right = list(members[i])
+		right[0] = 0
+		members_copy[i] = tuple(right)
+		members_copy.insert(i, (0, 'X', 0))
+
+		solutions.append(members_copy)
+
+	optimal = max(solutions, key=compute_happiness)
+
+	return optimal + [compute_happiness(optimal)]
+
+# print optimally_add_member(test_arrangement, None)
+print arrangement
+print optimally_add_member(arrangement, None)
