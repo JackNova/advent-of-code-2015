@@ -103,6 +103,8 @@ for s in range(1, 2503+1):
         km, name = leader
         if km == leader_position:
             points[name] += 1
+        else:
+            break
             
 print points
 
