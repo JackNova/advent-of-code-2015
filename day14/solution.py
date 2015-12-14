@@ -38,7 +38,7 @@ def reindeer(seconds, config):
             walked_distance += velocity
             steps += 1
 
-    return walked_distance
+    return (walked_distance, name)
 
 
 # After one second, Comet has gone 14 km, while Dancer has gone 16 km.
@@ -53,15 +53,21 @@ def reindeer(seconds, config):
 
 comet = eval_input("Comet can fly 14 km/s for 10 seconds, but then must rest for 127 seconds.")
 
-assert reindeer(1, comet) == 14
-assert reindeer(10, comet) == 140
-assert reindeer(1000, comet) == 1120
+assert reindeer(1, comet) == (14, 'Comet')
+assert reindeer(10, comet) == (140, 'Comet')
+assert reindeer(1000, comet) == (1120, 'Comet')
 
 dancer = eval_input("Dancer can fly 16 km/s for 11 seconds, but then must rest for 162 seconds.")
-assert reindeer(1, dancer) == 16
-assert reindeer(10, dancer) == 160
-assert reindeer(1000, dancer) == 1056
+assert reindeer(1, dancer) == (16, "Dancer")
+assert reindeer(10, dancer) == (160, "Dancer")
+assert reindeer(1000, dancer) == (1056, "Dancer")
 
 
 # Given the descriptions of each reindeer (in your puzzle input), after exactly 2503 seconds,
 # what distance has the winning reindeer traveled?
+
+with open('input.txt', 'r') as f: input = f.read().splitlines()
+
+results = [ reindeer(2503, eval_input(x)) for x in input ]
+print results
+print max(results, key=lambda x: x[0])
