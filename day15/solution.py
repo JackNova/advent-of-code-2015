@@ -55,10 +55,19 @@ assert eval_input("Butterscotch: capacity -1, durability -2, flavor 6, texture 3
 # results in a total score of 62842880, which happens to be the best score possible
 
 def evaluate_recipe(recipe):
+	""" the recipe should be of the form 
+	[(quantity, ingredient), ...]
+	example: [(44, butterscotch), ...]
+	where the ingredient is of kind
+	(name, capacity, durability, flavor, texture, calories)
+	returns (value, total_calories)
+	"""
 	total_capacity = 0
 	total_durability = 0
 	total_flavor = 0
 	total_texture = 0
+
+	total_calories = 0
 
 	for teaspoons, ingredient in recipe:
 		name, capacity, durability, flavor, texture, calories = ingredient
@@ -67,15 +76,18 @@ def evaluate_recipe(recipe):
 		total_flavor += flavor * teaspoons
 		total_texture += texture * teaspoons
 
+		total_calories += calories * teaspoons
+
 	gtz = [n if n>=0 else 0 for n in [total_capacity, total_durability, total_flavor, total_texture] ]
-	return prod(gtz)
+	value = prod(gtz)
+	return ( value, total_calories )
 
 butterscotch = eval_input("Butterscotch: capacity -1, durability -2, flavor 6, texture 3, calories 8")
 cinnamon = eval_input("Cinnamon: capacity 2, durability 3, flavor -2, texture -1, calories 3")
 
 test_recipe = [(44, butterscotch), (56, cinnamon)]
 
-assert evaluate_recipe(test_recipe) == 62842880
+assert evaluate_recipe(test_recipe) == (62842880, 520)
 
 def partitions(n,k,l=1):
     '''n is the integer to partition, k is the length of partitions, l is the min partition element size'''
@@ -108,14 +120,33 @@ assert len(set(xs)) == 156849
 def bake(teaspoons, ingredients_str):
 	ingredients = [eval_input(s) for s in ingredients_str]
 	attempts = [( amounts, evaluate_recipe( zip(amounts, ingredients) ) ) for amounts in partitions_permutations(teaspoons, len(ingredients))]
-	return max(attempts, key=lambda x: x[1])
+	return max(attempts, key=lambda (amounts, (value, calories)): value)
 
-result_test = bake(100, ingredients)
-assert result_test == ( (44, 56), 62842880 )
+result_amounts, (result_value, result_calories) = bake(100, ingredients)
+assert result_amounts == (44, 56)
+assert result_value == 62842880
+assert result_calories == 520
 
 with open('input.txt', 'r') as f: input = f.read().splitlines()
 
-result = bake(100, input)
-print result
-assert result[1] < 536640
+result_amounts, (result_value, result_calories) = bake(100, input)
+
+print """The best recipe you can bake will have a value of %s and will be composed by the following
+amounts of ingrediens (in order) %s. 
+By the way, it will have %s calories""" % (result_value, result_amounts, result_calories)
+
+
+# --- Part Two ---
+
+# Your cookie recipe becomes wildly popular! Someone asks if you can make another recipe
+# that has exactly 500 calories per cookie (so they can use it as a meal replacement).
+# Keep the rest of your award-winning process the same (100 teaspoons, same ingredients, same scoring system).
+
+# For example, given the ingredients above, if you had instead selected 40 teaspoons
+# of butterscotch and 60 teaspoons of cinnamon (which still adds to 100), the total calorie
+# count would be 40*8 + 60*3 = 500. The total score would go down, though: only 57600000,
+# the best you can do in such trying circumstances.
+
+# Given the ingredients in your kitchen and their properties, what is the total score of the
+# highest-scoring cookie you can make with a calorie total of 500?
 
