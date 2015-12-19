@@ -70,3 +70,44 @@ def filter_out_mismatches(target_matches, available_records):
 for m in filter_out_mismatches(target_matches, parse_input(input)):
 	print m
 
+
+# --- Part Two ---
+
+# As you're about to send the thank you note, something in the MFCSAM's instructions catches your eye.
+# Apparently, it has an outdated retroencabulator, and so the output from the machine
+# isn't exact values - some of them indicate ranges.
+
+# In particular, the cats and trees readings indicates that there are greater than that many
+# (due to the unpredictable nuclear decay of cat dander and tree pollen),
+# while the pomeranians and goldfish readings indicate that there are fewer than that many
+# (due to the modial interaction of magnetoreluctance).
+
+# What is the number of the real Aunt Sue?
+def filter_out_mismatches2(target_matches, available_records):
+	for aunt, features in available_records:
+		match = True
+		for k, aunt_value in features.iteritems():
+			target_value = int(target_matches[k])
+			if k in ['trees', 'cats']:
+				# the cats and trees readings indicates that there are greater than that many
+				# if the machine senses n it means that the aunt_value has to be > n
+				if target_value >= int(aunt_value):
+					# print "%s has %s mismatch because %s is < %s *target" % (aunt, k, aunt_value, target_value)
+					match = False
+					break
+			elif k in ['pomeranians', 'goldfish']:
+				# the pomeranians and goldfish readings indicate that there are fewer than that many
+				if target_value <= int(aunt_value):
+					# print "%s has %s mismatch because %s is > %s *target" % (aunt, k, aunt_value, target_value)
+					match = False
+					break
+			elif target_value != int(aunt_value):
+				# print "%s has %s mismatch because %s is != %s" % (aunt, k, aunt_value, target_value)
+				match = False
+				break
+		if match:
+			yield (aunt, features)
+
+
+for m in filter_out_mismatches2(target_matches, parse_input(input)):
+	print m
