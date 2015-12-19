@@ -1,4 +1,5 @@
 from itertools import combinations, permutations
+from collections import defaultdict
 
 # --- Day 17: No Such Thing as Too Much ---
 
@@ -40,4 +41,23 @@ sizes = [int(s) for s in input]
 
 result_1 = list(ways_to_store(150, sizes))
 print len(result_1)
+
+
+# --- Part Two ---
+
+# While playing with all the containers in the kitchen, another load of eggnog arrives!
+# The shipping and receiving department is requesting as many containers as you can spare.
+
+# Find the minimum number of containers that can exactly fit all 150 liters of eggnog.
+# How many different ways can you fill that number of containers and still hold exactly 150 litres?
+
+# In the example above, the minimum number of containers was two.
+# There were three ways to use that many containers, and so the answer there would be 3.
+
+dk = defaultdict(int)
+for r in result_1:
+	dk[len(r)] += 1
+
+print dk
+
 
