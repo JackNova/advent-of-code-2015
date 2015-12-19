@@ -1,5 +1,6 @@
 import re
 import operator
+from itertools import permutations
 
 
 def prod(iterable):
@@ -66,7 +67,7 @@ def evaluate_recipe(recipe):
 		total_flavor += flavor * teaspoons
 		total_texture += texture * teaspoons
 
-	gtz = [n for n in [total_capacity, total_durability, total_flavor, total_texture] if n > 0]
+	gtz = [n if n>=0 else 0 for n in [total_capacity, total_durability, total_flavor, total_texture] ]
 	return prod(gtz)
 
 butterscotch = eval_input("Butterscotch: capacity -1, durability -2, flavor 6, texture 3, calories 8")
@@ -76,8 +77,45 @@ test_recipe = [(44, butterscotch), (56, cinnamon)]
 
 assert evaluate_recipe(test_recipe) == 62842880
 
+def partitions(n,k,l=1):
+    '''n is the integer to partition, k is the length of partitions, l is the min partition element size'''
+    if k < 1:
+        raise StopIteration
+    if k == 1:
+        if n >= l:
+            yield (n,)
+        raise StopIteration
+    for i in range(l,n+1):
+        for result in partitions(n-i,k-1,i):
+            yield (i,)+result
+
+def partitions_permutations(n, k):
+	xs = partitions(n, k)
+	for x in xs:
+		for p in permutations(x):
+			yield p
+
+xs = list(partitions_permutations(100, 4))
+assert len(xs) == 171672
+assert len(set(xs)) == 156849
+
 # given these ingredients. If any properties had produced a negative total,
 # it would have instead become zero, causing the whole score to multiply to zero.
 
 # Given the ingredients in your kitchen and their properties, what is the total
 # score of the highest-scoring cookie you can make?
+
+def bake(teaspoons, ingredients_str):
+	ingredients = [eval_input(s) for s in ingredients_str]
+	attempts = [( amounts, evaluate_recipe( zip(amounts, ingredients) ) ) for amounts in partitions_permutations(teaspoons, len(ingredients))]
+	return max(attempts, key=lambda x: x[1])
+
+result_test = bake(100, ingredients)
+assert result_test == ( (44, 56), 62842880 )
+
+with open('input.txt', 'r') as f: input = f.read().splitlines()
+
+result = bake(100, input)
+print result
+assert result[1] < 536640
+
