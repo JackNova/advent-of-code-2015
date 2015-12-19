@@ -150,3 +150,13 @@ By the way, it will have %s calories""" % (result_value, result_amounts, result_
 # Given the ingredients in your kitchen and their properties, what is the total score of the
 # highest-scoring cookie you can make with a calorie total of 500?
 
+def bake2(teaspoons, ingredients_str):
+	ingredients = [eval_input(s) for s in ingredients_str]
+	attempts = [( amounts, evaluate_recipe( zip(amounts, ingredients) ) ) for amounts in partitions_permutations(teaspoons, len(ingredients))]
+	target_calories = [(amounts, (value, calories)) for (amounts, (value, calories)) in attempts if calories == 500]
+	return max(target_calories, key=lambda (amounts, (value, calories)): value)
+
+result_amounts, (result_value, result_calories) = bake2(100, input)
+print """The best way of getting 500 calories is by baking the following amounts %s
+and getting a total value of %s""" % (result_amounts, result_value)
+
