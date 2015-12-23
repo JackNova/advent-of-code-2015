@@ -32,62 +32,126 @@ def neighbors(cell, grid_size):
 
 	def exists(cell):
 		x, y = cell
-		return x>=0 and x<=height and y>=0 and y<=width
+		return x>=0 and x<height and y>=0 and y<width
 
 	return [neighbor for neighbor in top + left + right + bottom if exists(neighbor)]
 
 assert set(neighbors((0, 1), (6, 6))) == set([(0,0), (1,0), (1,1), (1,2), (0,2)])
+assert set(neighbors((4, 3), (6, 6))) == set([(3,2), (3,3), (3,4), (4,2), (4,4), (5,2), (5,3), (5,4)])
 
 
 # The state a light should have next is based on its current state (on or off)
 # plus the number of neighbors that are on:
 
-# A light which is on stays on when 2 or 3 neighbors are on,
-# and turns off otherwise.
-# A light which is off turns on if exactly 3 neighbors are on, and stays off otherwise.
-# All of the lights update simultaneously; they all consider the same current state before moving to the next.
+def will_be_turned_on(light, grid, grid_size=(6,6)):
+	row, col = light
+	width, height = grid_size
+	state = grid[(row*width) + col]
+	ns = neighbors(light, grid_size)
+
+	neighbors_on = len(filter(lambda (r, c): grid[(r*width)+c] == '#', neighbors(light, grid_size)))
+	# A light which is on stays on when 2 or 3 neighbors are on,
+	# and turns off otherwise.
+	if state is '#':
+		return neighbors_on in [2, 3]
+	# A light which is off turns on if exactly 3 neighbors are on, and stays off otherwise.
+	# All of the lights update simultaneously; they all consider the same current state before moving to the next.
+	else:
+		return neighbors_on == 3
 
 # Here's a few steps from an example configuration of another 6x6 grid:
 
 # Initial state:
-# .#.#.#
-# ...##.
-# #....#
-# ..#...
-# #.#..#
-# ####..
+initial_state = """
+.#.#.#
+...##.
+#....#
+..#...
+#.#..#
+####..
+"""
+
+def evolve(state, size=(6, 6)):
+	state_s = state.replace('\n', '')
+	result = ''
+	width, height = size
+	for x in range(height):
+		for y in range(width):
+			if will_be_turned_on( (x,y), state_s, grid_size=size ):
+				result += '#'
+			else:
+				result += '.'
+	return result
+
 
 # After 1 step:
-# ..##..
-# ..##.#
-# ...##.
-# ......
-# #.....
-# #.##..
+state_2 = """
+..##..
+..##.#
+...##.
+......
+#.....
+#.##..
+"""
+
+test_state_2 = evolve(initial_state)
+assert test_state_2 == state_2.replace('\n', '')
 
 # After 2 steps:
-# ..###.
-# ......
-# ..###.
-# ......
-# .#....
-# .#....
+state_3 = """
+..###.
+......
+..###.
+......
+.#....
+.#....
+"""
+
+test_state_3 = evolve(test_state_2)
+assert test_state_3 == state_3.replace('\n', '')
 
 # After 3 steps:
-# ...#..
-# ......
-# ...#..
-# ..##..
-# ......
-# ......
+state_4 = """
+...#..
+......
+...#..
+..##..
+......
+......
+"""
+
+test_state_4 = evolve(test_state_3)
+assert test_state_4 == state_4.replace('\n', '')
 
 # After 4 steps:
-# ......
-# ......
-# ..##..
-# ..##..
-# ......
-# ......
+state_5 = """
+......
+......
+..##..
+..##..
+......
+......
+"""
+
+test_state_5 = evolve(test_state_4)
+assert test_state_5 == state_5.replace('\n', '')
+
 # After 4 steps, this example has four lights on.
+
+s = initial_state
+for _ in range(4):
+	s = evolve(s)
+
+print s
+print len(filter(lambda x: x =='#', s))
+
+with open('input.txt', 'r') as f: input = f.read()
+s = input
+for _ in range(100):
+	s = evolve(s, size=(100, 100))
+
+
+print s
+print len(filter(lambda x: x=='#',s))
 
 # In your grid of 100x100 lights, given your initial configuration, how many lights are on after 100 steps?
