@@ -71,13 +71,15 @@ initial_state = """
 ####..
 """
 
-def evolve(state, size=(6, 6)):
+def evolve(state, size=(6, 6), keep_on=[]):
 	state_s = state.replace('\n', '')
 	result = ''
 	width, height = size
 	for x in range(height):
 		for y in range(width):
-			if will_be_turned_on( (x,y), state_s, grid_size=size ):
+			if (x, y) in keep_on:
+				result += '#'
+			elif will_be_turned_on( (x,y), state_s, grid_size=size ):
 				result += '#'
 			else:
 				result += '.'
@@ -147,11 +149,95 @@ print len(filter(lambda x: x =='#', s))
 
 with open('input.txt', 'r') as f: input = f.read()
 s = input
-for _ in range(100):
-	s = evolve(s, size=(100, 100))
+# PART ONE
+# for _ in range(100):
+# 	s = evolve(s, size=(100, 100))
 
+# print s
+# print len(filter(lambda x: x=='#',s))
+
+# In your grid of 100x100 lights, given your initial configuration, how many lights are on after 100 steps?
+
+
+# --- Part Two ---
+
+# You flip the instructions over; Santa goes on to point out that this is all just an implementation of
+# Conway's Game of Life. At least, it was, until you notice that something's wrong with the grid of lights
+# you bought: four lights, one in each corner, are stuck on and can't be turned off.
+# The example above will actually run like this:
+
+initial_state = """
+##.#.#
+...##.
+#....#
+..#...
+#.#..#
+####.#
+"""
+
+after_one_step = """
+#.##.#
+####.#
+...##.
+......
+#...#.
+#.####
+"""
+
+assert evolve(initial_state, size=(6, 6), keep_on=[(0,0), (0,5), (5,5), (5,0)]) == after_one_step.replace('\n', '')
+
+after_two_steps = """
+#..#.#
+#....#
+.#.##.
+...##.
+.#..##
+##.###
+"""
+
+assert evolve(after_one_step, size=(6, 6), keep_on=[(0,0), (0,5), (5,5), (5,0)]) == after_two_steps.replace('\n', '')
+
+after_three_steps = """
+#...##
+####.#
+..##.#
+......
+##....
+####.#
+"""
+
+assert evolve(after_two_steps, size=(6, 6), keep_on=[(0,0), (0,5), (5,5), (5,0)]) == after_three_steps.replace('\n', '')
+
+after_four_steps = """
+#.####
+#....#
+...#..
+.##...
+#.....
+#.#..#
+"""
+
+assert evolve(after_three_steps, size=(6, 6), keep_on=[(0,0), (0,5), (5,5), (5,0)]) == after_four_steps.replace('\n', '')
+
+after_five_steps = """
+##.###
+.##..#
+.##...
+.##...
+#.#...
+##...#
+"""
+
+assert evolve(after_four_steps, size=(6, 6), keep_on=[(0,0), (0,5), (5,5), (5,0)]) == after_five_steps.replace('\n', '')
+
+# After 5 steps, this example now has 17 lights on.
+
+# In your grid of 100x100 lights, given your initial configuration, but with the four corners always
+# in the on state, how many lights are on after 100 steps?
+
+s = input
+for _ in range(100):
+	s = evolve(s, size=(100, 100), keep_on=[(0,0), (0,99), (99,99), (99,0)])
 
 print s
 print len(filter(lambda x: x=='#',s))
-
-# In your grid of 100x100 lights, given your initial configuration, how many lights are on after 100 steps?
