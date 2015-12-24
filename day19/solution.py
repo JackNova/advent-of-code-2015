@@ -70,6 +70,8 @@ assert set(generate_replacements(test_replacements, test_starting_molecule)) == 
 # Santa's favorite molecule, HOHOHO, can become 7 distinct molecules
 # (over nine replacements: six from H, and three from O).
 
+assert len(set(generate_replacements(test_replacements, 'HOHOHO'))) == 7
+
 # The machine replaces without regard for the surrounding characters.
 # For example, given the string H2O, the transition H => OO would result in OO2O.
 
