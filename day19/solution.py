@@ -46,6 +46,15 @@ test_starting_molecule = 'HOH'
 # HOOH (via H => OH on the second H).
 # HHHH (via O => HH).
 
+def chunks(s, max_size):
+	s_length = len(s)
+	for i in range(len(s)):
+		for j in range(max_size):
+			if i+j+1 <= s_length:
+				yield s[i:i+j+1]
+
+assert list(chunks('dario', 2)) == ['d', 'da', 'a', 'ar', 'r', 'ri', 'i', 'io', 'o']
+
 # So, in the example above, there are 4 distinct molecules
 # (not five, because HOOH appears twice) after one replacement from HOH.
 
