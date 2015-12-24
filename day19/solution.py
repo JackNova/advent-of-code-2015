@@ -51,9 +51,18 @@ def chunks(s, max_size):
 	for i in range(len(s)):
 		for j in range(max_size):
 			if i+j+1 <= s_length:
-				yield s[i:i+j+1]
+				yield (s[i:i+j+1], i, i+j+1)
 
-assert list(chunks('dario', 2)) == ['d', 'da', 'a', 'ar', 'r', 'ri', 'i', 'io', 'o']
+assert list(chunks('dario', 2)) == [('d', 0, 1), ('da', 0, 2), ('a', 1, 2), ('ar', 1, 3), ('r', 2, 3), ('ri', 2, 4), ('i', 3, 4), ('io', 3, 5), ('o', 4, 5)]
+
+def generate_replacements(available_replacements, starting_molocule):
+	replacements = parse_replacements(available_replacements)
+	max_replacements_key_length = max([len(x) for x in replacements.keys()])
+	for chunk, i, j in chunks(starting_molocule, max_replacements_key_length):
+		for replacement in replacements[chunk]:
+			yield starting_molocule[:i] + replacement + starting_molocule[j:]
+
+assert set(generate_replacements(test_replacements, test_starting_molecule)) == set(['HHHH', 'HOOH', 'OHOH', 'HOHO'])
 
 # So, in the example above, there are 4 distinct molecules
 # (not five, because HOOH appears twice) after one replacement from HOH.
