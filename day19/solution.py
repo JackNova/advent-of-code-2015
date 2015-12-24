@@ -1,5 +1,6 @@
 import re
 from collections import defaultdict
+from bfs import breadth_first_search
 # --- Day 19: Medicine for Rudolph ---
 
 # Rudolph the Red-Nosed Reindeer is sick! His nose isn't shining very brightly, and he needs medicine.
@@ -84,4 +85,29 @@ with open('input.txt') as f: input = f.read()
 
 fucked_molecule = "CRnCaCaCaSiRnBPTiMgArSiRnSiRnMgArSiRnCaFArTiTiBSiThFYCaFArCaCaSiThCaPBSiThSiThCaCaPTiRnPBSiThRnFArArCaCaSiThCaSiThSiRnMgArCaPTiBPRnFArSiThCaSiRnFArBCaSiRnCaPRnFArPMgYCaFArCaPTiTiTiBPBSiThCaPTiBPBSiRnFArBPBSiRnCaFArBPRnSiRnFArRnSiRnBFArCaFArCaCaCaSiThSiThCaCaPBPTiTiRnFArCaPTiBSiAlArPBCaCaCaCaCaSiRnMgArCaSiThFArThCaSiThCaSiRnCaFYCaSiRnFYFArFArCaSiRnFYFArCaSiRnBPMgArSiThPRnFArCaSiRnFArTiRnSiRnFYFArCaSiRnBFArCaSiRnTiMgArSiThCaSiThCaFArPRnFArSiRnFArTiTiTiTiBCaCaSiRnCaCaFYFArSiThCaPTiBPTiBCaSiThSiRnMgArCaF"
 print len(set(generate_replacements(input, fucked_molecule)))
+
+example_replacements = """
+e => H
+e => O
+H => HO
+H => OH
+O => HH
+"""
+
+is_goal = lambda x: x == 'HOH'
+
+def successors(available_replacements):
+	replacements = parse_replacements(available_replacements)
+	max_replacements_key_length = max([len(x) for x in replacements.keys()])
+
+	def result(starting_molocule):
+		for chunk, i, j in chunks(starting_molocule, max_replacements_key_length):
+			for replacement in replacements[chunk]:
+				yield starting_molocule[:i] + replacement + starting_molocule[j:]
+
+	return result
+
+assert len(breadth_first_search('e', is_goal, successors(example_replacements))) == 3
+
+assert len(breadth_first_search('e', lambda x: x=='HOHOHO', successors(example_replacements))) == 6
 
