@@ -27,10 +27,13 @@ O => HH
 """
 
 replacement_template = re.compile("(\w+) => (\w+)")
-def parse_replacements(txt):
+def parse_replacements(txt, invert=False):
 	result = defaultdict(list)
 	for k, v in replacement_template.findall(txt):
-		result[k].append(v)
+		if invert:
+			result[v].append(k)
+		else:
+			result[k].append(v)
 	return result
 
 assert parse_replacements(test_replacements) == {'H': ['HO', 'OH'], 'O': ['HH']}
@@ -96,8 +99,8 @@ O => HH
 
 is_goal = lambda x: x == 'HOH'
 
-def successors(available_replacements):
-	replacements = parse_replacements(available_replacements)
+def successors(available_replacements, invert=False):
+	replacements = parse_replacements(available_replacements, invert=invert)
 	max_replacements_key_length = max([len(x) for x in replacements.keys()])
 
 	def result(starting_molocule):
