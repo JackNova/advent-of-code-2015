@@ -1,6 +1,6 @@
 import collections
 
-def breadth_first_search(start, is_goal, successors, heuristic=lambda successor, path : True):
+def breadth_first_search(start, is_goal, successors, heuristic=lambda successor, path, initial_state : True, pick_next=lambda xs: xs.pop()):
 	
 	frontier = collections.deque([(start, [])])
 	visited = collections.defaultdict(bool)
