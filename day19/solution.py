@@ -114,3 +114,57 @@ assert len(breadth_first_search('e', is_goal, successors(example_replacements)))
 
 assert len(breadth_first_search('e', lambda x: x=='HOHOHO', successors(example_replacements))) == 6
 
+def heuristic_better_shorten(successor, path, initial_state):
+	last_element_in_path = len(path) > 0 and path[len(path) - 1]
+	if not last_element_in_path:
+		return len(successor) < len(initial_state)
+	else:
+		return len(successor) < len(last_element_in_path)
+
+def pick_next_strategy(frontier):
+	longest_path = sorted(frontier, key=lambda x: -len(x[1]))
+	candidate = longest_path[0]
+	frontier.remove(candidate)
+	return candidate
+
+# without heuristic
+
+result = breadth_first_search('HOHOHO', lambda x: x=='e', successors(example_replacements, invert=True))
+print result
+print len(result)
+
+# with HEURISTIC
+result = breadth_first_search('HOHOHO',
+	lambda x: x=='e',
+	successors(example_replacements, invert=True),
+	heuristic=heuristic_better_shorten,
+	pick_next=pick_next_strategy)
+print result
+print len(result)
+
+# with HEURISTIC
+result = breadth_first_search(fucked_molecule,
+	lambda x: x=='e',
+	successors(input, invert=True),
+	# heuristic=heuristic_better_shorten,
+	pick_next=pick_next_strategy)
+print result
+print len(result)
+
+
+
+
+chopped = 'CRnCaSiRnPMgYFArCaPRnCaRnFArArCaCaCaCaPTiRnPRnFArCaFArCaFArThCaPRnCaCaFArCaCaF'
+
+# result = breadth_first_search(fucked_molecule, lambda x: x=='e', successors(input, invert=True))
+# print result
+# print len(result)
+
+# def chop_down(txt, available_replacements):
+# 	replacements = parse_replacements(available_replacements, invert=True)
+# 	for k, v in replacements.iteritems():
+# 		txt = txt.replace(k, v[0])
+# 	print txt
+
+# chop_down('CRnCaSiRnBFArSiRnSiRnFArBFYFArCaCaCaPRnCaRnFArArCaCaCaCaCaCaSiRnFYFArPBCaCaSiRnFArTiRnPRnCaFArCaCaCaCaFArCaCaCaCaFArThSiRnFYFArCaSiRnBFArCaPTiRnCaCaCaCaCaFArPTiBSiRnFYFArCaCaCaCaF', input)
+
