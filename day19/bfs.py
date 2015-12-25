@@ -3,6 +3,7 @@ import collections
 def breadth_first_search(start, is_goal, successors):
 	
 	frontier = collections.deque([(start, [])])
+	visited = collections.defaultdict(bool)
 
 	while len(frontier) > 0:
 		state, path = frontier.pop()
@@ -10,6 +11,6 @@ def breadth_first_search(start, is_goal, successors):
 			if is_goal(s):
 				return path + [s]
 			else:
-				if not any([x for x, _ in frontier if x==s]):
+				if not visited[s]:
 					frontier.appendleft( (s, path+[s]) )
-			# print frontier
+					visited[s] = True
