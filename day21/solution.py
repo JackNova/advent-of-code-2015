@@ -155,12 +155,32 @@ def did_i_win_the_fight(boss):
 		while True:
 			me.attack(boss)
 			if boss.hit_points<=0:
+				boss.hit_points = 100
+				me.hit_points = 100
 				return True
 			boss.attack(me)
 			if me.hit_points<=0:
+				boss.hit_points = 100
+				me.hit_points = 100
 				return False
 
 	return inner
+
+def did_i_loose_the_fight(boss):
+	def inner(me):
+		while True:
+			me.attack(boss)
+			if boss.hit_points<=0:
+				boss.hit_points = 100
+				me.hit_points = 100
+				return False
+			boss.attack(me)
+			if me.hit_points<=0:
+				boss.hit_points = 100
+				me.hit_points = 100
+				return True
+	return inner
+
 
 def filter_equipments(predicate=lambda equipment: True, equipments=[]):
 	mock_player = Player(hit_points=100)
@@ -171,9 +191,28 @@ def filter_equipments(predicate=lambda equipment: True, equipments=[]):
 
 		mock_player.reset_equipment()
 
-good_equipments = filter_equipments(predicate=did_i_win_the_fight(boss),
-	equipments=equipment_generator(weapons, armors, rings))
+good_equipments = list(filter_equipments(predicate=did_i_win_the_fight(boss),
+	equipments=equipment_generator(weapons, armors, rings)))
 
-for eq in good_equipments:
-	print eq
+def price(equipment):
+	total = 0
+	for name, cost, damage, armor in equipment:
+		total += cost
+	return total
+
+minimum_priced_equipment = min(good_equipments, key=price)
+print "the minimum priced equipment that allows to win the figth is %s and costs %s" % (minimum_priced_equipment, price(minimum_priced_equipment))
+
+# --- Part Two ---
+
+# Turns out the shopkeeper is working with the boss, and can persuade
+# you to buy whatever items he wants. The other rules still apply, and he still only has one of each item.
+
+# What is the most amount of gold you can spend and still lose the fight?
+
+bad_equipments = list(filter_equipments(predicate=did_i_loose_the_fight(boss),
+	equipments=equipment_generator(weapons, armors, rings)))
+
+maxmimum_priced_sheet = max(bad_equipments, key=price)
+print "the maximum priced equipment that allows to loose the figth is %s and costs %s" % (maxmimum_priced_sheet, price(maxmimum_priced_sheet))
 
