@@ -1,3 +1,4 @@
+from itertools import combinations
 # --- Day 21: RPG Simulator 20XX ---
 
 # Little Henry Case got a new video game for Christmas.
@@ -22,6 +23,20 @@ class Player(object):
 		# An attacker always does at least 1 damage.
 		strength = self.damage - defender.armor
 		defender.hit_points -= (strength > 0 and strength or 1)
+
+	def buy(self, equipment):
+		# You must buy exactly one weapon; no dual-wielding.
+		# Armor is optional, but you can't use more than one.
+		# You can buy 0-2 rings (at most one for each hand).
+		# You must use any items you buy.
+		# The shop only has one of each item, so you can't buy, for example, two rings of Damage +3.
+		for name, cost, damage, armor in equipment:
+			self.damage += damage
+			self.armor += armor
+
+	def reset_equipment(self):
+		self.damage = 0
+		self.armor = 0
 
 # So, if the attacker has a damage score of 8, and the defender has an armor score of 3,
 # the defender loses 5 hit points.
@@ -49,32 +64,49 @@ assert boss.hit_points == 100 - 1
 # Here is what the item shop is selling:
 
 # Weapons:    Cost  Damage  Armor
-# Dagger        8     4       0
-# Shortsword   10     5       0
-# Warhammer    25     6       0
-# Longsword    40     7       0
-# Greataxe     74     8       0
+weapons = [
+('Dagger',    	8,    4,      0),
+('Shortsword',  10,   5,      0),
+('Warhammer',   25,   6,      0),
+('Longsword',   40,   7,      0),
+('Greataxe',    74,   8,      0)
+]
 
 # Armor:      Cost  Damage  Armor
-# Leather      13     0       1
-# Chainmail    31     0       2
-# Splintmail   53     0       3
-# Bandedmail   75     0       4
-# Platemail   102     0       5
+armors = [
+('Leather',      13,     0,       1),
+('Chainmail',    31,     0,       2),
+('Splintmail',   53,     0,       3),
+('Bandedmail',   75,     0,       4),
+('Platemail',   102,     0,       5)
+]
 
 # Rings:      Cost  Damage  Armor
-# Damage +1    25     1       0
-# Damage +2    50     2       0
-# Damage +3   100     3       0
-# Defense +1   20     0       1
-# Defense +2   40     0       2
-# Defense +3   80     0       3
+rings = [
+('Damage +1',    25,     1,       0),
+('Damage +2',    50,     2,       0),
+('Damage +3',   100,     3,       0),
+('Defense +1',   20,     0,       1),
+('Defense +2',   40,     0,       2),
+('Defense +3',   80,     0,       3)
+]
 
 # You must buy exactly one weapon; no dual-wielding.
 # Armor is optional, but you can't use more than one.
 # You can buy 0-2 rings (at most one for each hand).
 # You must use any items you buy.
 # The shop only has one of each item, so you can't buy, for example, two rings of Damage +3.
+
+def flatten(xs):
+	for x in xs:
+		for i in x:
+			yield i
+
+def equipment_generator(weapons, armors, rings):
+	for weapon in weapons:
+		for armor in armors + [('None', 0, 0, 0)]:
+			for rgs in list(combinations(rings, 2)) + [[ring] for ring in rings] + [[('None', 0, 0, 0)]]:
+				yield [weapon, armor] + list(rgs)
 
 # For example, suppose you have 8 hit points, 5 damage, and 5 armor,
 # and that the boss has 12 hit points, 7 damage, and 2 armor:
@@ -108,4 +140,40 @@ assert boss.hit_points == 0
 # You have 100 hit points.
 # The boss's actual stats are in your puzzle input. What is the least amount
 # of gold you can spend and still win the fight?
+
+input = """
+Hit Points: 100
+Damage: 8
+Armor: 2
+"""
+
+boss = Player(hit_points=100, damage=8, armor=2)
+me = Player(hit_points=100)
+
+def did_i_win_the_fight(boss):
+	def inner(me):
+		while True:
+			me.attack(boss)
+			if boss.hit_points<=0:
+				return True
+			boss.attack(me)
+			if me.hit_points<=0:
+				return False
+
+	return inner
+
+def find_equipment(player, is_good, equipments=equipment_generator(weapons, armors, rings)):
+	for equipment in equipments:
+		player.buy(equipment)
+		if is_good(player):
+			yield equipment
+
+		player.reset_equipment()
+
+good_equipments = find_equipment(me,
+	did_i_win_the_fight(boss),
+	equipments=equipment_generator(weapons, armors, rings))
+
+for eq in good_equipments:
+	print eq
 
