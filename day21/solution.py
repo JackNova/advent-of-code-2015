@@ -162,16 +162,16 @@ def did_i_win_the_fight(boss):
 
 	return inner
 
-def find_equipment(player, is_good, equipments=equipment_generator(weapons, armors, rings)):
+def filter_equipments(predicate=lambda equipment: True, equipments=[]):
+	mock_player = Player(hit_points=100)
 	for equipment in equipments:
-		player.buy(equipment)
-		if is_good(player):
+		mock_player.buy(equipment)
+		if predicate(mock_player):
 			yield equipment
 
-		player.reset_equipment()
+		mock_player.reset_equipment()
 
-good_equipments = find_equipment(me,
-	did_i_win_the_fight(boss),
+good_equipments = filter_equipments(predicate=did_i_win_the_fight(boss),
 	equipments=equipment_generator(weapons, armors, rings))
 
 for eq in good_equipments:
