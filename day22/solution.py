@@ -37,32 +37,41 @@ class Boss(object):
 	def __init__(self, hit_points=100, damage=0):
 		self.hit_points = hit_points
 		self.damage = damage
-		self.alive = True
 
 	def attack(self, player):
 		print 'Boss attacks for damage %s' % self.damage
 		player.hit_points -= self.damage
 
 	def is_alive(self):
-		return self.alive
+		return self.hit_points > 0
 
 
 class Wizard(object):
-	def __init__(self, mana=500, hit_points=100):
+	def __init__(self, mana=500, hit_points=100, spell_selection_strategy=None):
 		self.mana = mana
 		self.alive = True
 		self.hit_points = hit_points
 		self.armor = 0
+		self.spell_selection_strategy = spell_selection_strategy
 
-	def cast_spell(self, game_state):
-		spell = self.select_spell()
+	def select_spell(self):
+		spell = self.spell_selection_strategy.select_spell()
 		if not spell:
 			self.alive = False
 		else:
-			game_state.spells.append(spell)
+			return spell
 
 	def is_alive(self):
-		return self.alive
+		return self.alive and self.hit_points > 0
+
+
+class SelectSpellByPredefinedOrder(object):
+	def __init__(self, spells=[]):
+		self.spells = list(reversed(spells))
+		
+	def select_spell(self):
+		spell = self.spells.pop()
+		return spell
 
 # Effects all work the same way.
 # Effects apply at the start of both the player's turns and the boss' turns.
@@ -79,21 +88,20 @@ class Effect(object):
 		self.on_apply = on_apply
 
 	def apply(self, game_state):
-		print 'casts %s' % self.name
 		self.on_apply(game_state)
 
 class TimedEffect(Effect):
 	def __init__(self, timer=1, on_end=noop, on_cast=noop, **kwargs):
-		Effect.__init__(self, **kwargs)
+		super(TimedEffect, self).__init__(**kwargs)
 		self.timer = timer
 		self.on_end = on_end
 		self.on_cast = on_cast
 
 	def apply(self, game_state):
-		Effect.on_apply(game_state)
+		super(TimedEffect, self).apply(game_state)
 		self.timer -= 1
 		print 'its timer is now %s' % self.timer
-		if timer <= 0:
+		if self.timer <= 0:
 			game_state.spells.remove(self)
 			print '%s ends' % self.name
 			self.on_end(game_state)
@@ -104,50 +112,44 @@ class TimedEffect(Effect):
 def damage_opponent(amount):
 	def f(game_state):
 		print 'deals %s damage;' % amount
-		game_state.opponent.hit_points -= amount
+		game_state.boss.hit_points -= amount
 	return f
 
 def heal_me(amount):
 	def f(game_state):
 		print 'hels me %s hit points' % amount
-		game_state.me.hit_points+=amount
+		game_state.wizard.hit_points+=amount
 	return f
 
 # Magic Missile costs 53 mana. It instantly does 4 damage.
-magic_missile = Effect(on_apply=damage_opponent(4), cost=53)
+magic_missile = Effect(name='Magic Missile', on_apply=damage_opponent(4), cost=53)
 
 # Drain costs 73 mana. It instantly does 2 damage and heals you for 2 hit points.
-drain = Effect(cost=73, on_apply=compose(damage_opponent(4), heal_me(2)))
+drain = Effect(name='Drain', cost=73, on_apply=compose(damage_opponent(4), heal_me(2)))
 
 # Shield costs 113 mana. It starts an effect that lasts for 6 turns.
 # While it is active, your armor is increased by 7.
 def increase_armor(amount):
 	def f(game_state):
-		game_state.me.armor += 7
+		game_state.wizard.armor += 7
 	return f
 
-shield = TimedEffect(cost=113, timer=6, on_cast=increase_armor(7), on_end=increase_armor(-7))
+shield = TimedEffect(name='Shield', cost=113, timer=6, on_cast=increase_armor(7), on_end=increase_armor(-7))
 
 # Poison costs 173 mana. It starts an effect that lasts for 6 turns.
 # At the start of each turn while it is active, it deals the boss 3 damage.
 
-poison = TimedEffect(cost=173, timer=6, on_apply=damage_opponent(3))
+poison = TimedEffect(name='Poison', cost=173, timer=6, on_apply=damage_opponent(3))
 
 # Recharge costs 229 mana. It starts an effect that lasts for 5 turns.
 # At the start of each turn while it is active, it gives you 101 new mana.
 
 def increase_mana(amount):
 	def f(game_state):
-		game_state.me.mana += amount
+		game_state.wizard.mana += amount
 	return f
 
-recharge = TimedEffect(cost=229, timer=5, on_apply=increase_mana(101))
-
-
-# For example, suppose the player has 10 hit points and 250 mana,
-me = Wizard(hit_points=10, mana=250)
-# and that the boss has 13 hit points and 8 damage:
-boss = Boss(hit_points=13, damage=8)
+recharge = TimedEffect(name='Recharge', cost=229, timer=5, on_apply=increase_mana(101))
 
 class GameState(object):
 	def __init__(self, wizard, boss):
@@ -162,27 +164,48 @@ def combat(wizard, boss):
 		print '- Player has %s hit points, %s armor, %s mana' % (gs.wizard.hit_points, gs.wizard.armor, gs.wizard.mana)
 		print '- Boss has %s hit points' % gs.boss.hit_points
 		
-	while wizard.is_alive() and boss.is_alive():
-		print '-- Player turn --'
-		for effect in gs.spells:
-			# Poison deals 3 damage; its timer is now 5.
-			print '%s deals %s damage; its timer is now %s' % (effect.name, effect.amount, effect.timer)
-			effect.apply(gs)
+	while True:
+		print '\n-- Player turn --'
 		print_recap(gs)
+		for effect in gs.spells:
+			print effect.name
+			effect.apply(gs)
+			if not boss.is_alive():
+				return
+
 		spell = wizard.select_spell()
 		if type(spell) is TimedEffect:
-			print 'Player casts %s\n\n' % spell.name
+			print 'Player casts %s' % spell.name
+			spell.cast(gs)
 			gs.spells.append(spell)
+			if not boss.is_alive():
+				return
 		else:
+			print 'Player uses instantily %s' % spell.name
 			spell.apply(gs)
+			if not boss.is_alive():
+				return
 
-		print '-- Boss turn --'
+		print '\n-- Boss turn --'
 		print_recap(gs)
+		for effect in gs.spells:
+			print effect.name
+			effect.apply(gs)
+			if not boss.is_alive():
+				return
 
 		boss.attack(wizard)
-		for effect in gs.spells:
-			effect.apply(gs)
+		if not wizard.is_alive():
+			return
 
+mock_order = [poison, magic_missile, recharge, shield, drain, poison, magic_missile]
+
+# For example, suppose the player has 10 hit points and 250 mana,
+wizard = Wizard(hit_points=10, mana=250, spell_selection_strategy=SelectSpellByPredefinedOrder(mock_order))
+# and that the boss has 13 hit points and 8 damage:
+boss = Boss(hit_points=13, damage=8)
+
+combat(wizard, boss)
 # -- Player turn --
 # - Player has 10 hit points, 0 armor, 250 mana
 # - Boss has 13 hit points
@@ -204,6 +227,9 @@ def combat(wizard, boss):
 # - Player has 2 hit points, 0 armor, 24 mana
 # - Boss has 3 hit points
 # Poison deals 3 damage. This kills the boss, and the player wins.
+
+assert not boss.is_alive() and wizard.is_alive()
+
 # Now, suppose the same initial conditions, except that the boss has 14 hit points instead:
 
 # -- Player turn --
