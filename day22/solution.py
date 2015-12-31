@@ -52,6 +52,7 @@ class Wizard(object):
 		self.mana = mana
 		self.alive = True
 		self.hit_points = hit_points
+		self.armor = 0
 
 	def cast_spell(self, game_state):
 		spell = self.select_spell()
