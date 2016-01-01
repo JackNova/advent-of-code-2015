@@ -91,6 +91,8 @@ class Effect(object):
 		self.on_apply = on_apply
 
 	def apply(self, game_state):
+		if type(self) is Effect:
+			game_state.wizard.mana -= self.cost
 		self.on_apply(game_state)
 
 class TimedEffect(Effect):
@@ -110,6 +112,7 @@ class TimedEffect(Effect):
 			self.on_end(game_state)
 
 	def cast(self, game_state):
+		game_state.wizard.mana -= self.cost
 		self.on_cast(game_state)
 
 def damage_opponent(amount):
