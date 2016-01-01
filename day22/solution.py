@@ -175,10 +175,11 @@ def combat(wizard, boss):
 	while True:
 		print '\n-- Player turn --'
 		print_recap(gs)
-		for effect in gs.spells:
+		for effect in list(gs.spells):
 			print effect.name
 			effect.apply(gs)
 			if not boss.is_alive():
+				print 'boss is dead.'
 				return
 
 		spell = wizard.select_spell()
@@ -187,23 +188,27 @@ def combat(wizard, boss):
 			spell.cast(gs)
 			gs.spells.append(spell)
 			if not boss.is_alive():
+				print 'boss is dead.'
 				return
 		else:
 			print 'Player uses instantily %s' % spell.name
 			spell.apply(gs)
 			if not boss.is_alive():
+				print 'boss is dead.'
 				return
 
 		print '\n-- Boss turn --'
 		print_recap(gs)
-		for effect in gs.spells:
+		for effect in list(gs.spells):
 			print effect.name
 			effect.apply(gs)
 			if not boss.is_alive():
+				print 'boss is dead.'
 				return
 
 		boss.attack(wizard)
 		if not wizard.is_alive():
+			print 'wizard is dead.'
 			return
 
 mock_order = [poison, magic_missile, recharge, shield, drain, poison, magic_missile]
