@@ -128,34 +128,36 @@ def heal_me(amount):
 	return f
 
 # Magic Missile costs 53 mana. It instantly does 4 damage.
-magic_missile = Effect(name='Magic Missile', on_apply=damage_opponent(4), cost=53)
+magic_missile = lambda : Effect(name='Magic Missile', on_apply=damage_opponent(4), cost=53)
 
 # Drain costs 73 mana. It instantly does 2 damage and heals you for 2 hit points.
-drain = Effect(name='Drain', cost=73, on_apply=compose(damage_opponent(4), heal_me(2)))
+drain = lambda : Effect(name='Drain', cost=73, on_apply=compose_execute_all(damage_opponent(2), heal_me(2)))
 
 # Shield costs 113 mana. It starts an effect that lasts for 6 turns.
 # While it is active, your armor is increased by 7.
 def increase_armor(amount):
 	def f(game_state):
+		print 'increase armor by %s' % amount
 		game_state.wizard.armor += 7
 	return f
 
-shield = TimedEffect(name='Shield', cost=113, timer=6, on_cast=increase_armor(7), on_end=increase_armor(-7))
+shield = lambda : TimedEffect(name='Shield', cost=113, timer=6, on_cast=increase_armor(7), on_end=increase_armor(-7))
 
 # Poison costs 173 mana. It starts an effect that lasts for 6 turns.
 # At the start of each turn while it is active, it deals the boss 3 damage.
 
-poison = TimedEffect(name='Poison', cost=173, timer=6, on_apply=damage_opponent(3))
+poison = lambda : TimedEffect(name='Poison', cost=173, timer=6, on_apply=damage_opponent(3))
 
 # Recharge costs 229 mana. It starts an effect that lasts for 5 turns.
 # At the start of each turn while it is active, it gives you 101 new mana.
 
 def increase_mana(amount):
 	def f(game_state):
+		print 'provides %s mana' % amount
 		game_state.wizard.mana += amount
 	return f
 
-recharge = TimedEffect(name='Recharge', cost=229, timer=5, on_apply=increase_mana(101))
+recharge = lambda : TimedEffect(name='Recharge', cost=229, timer=5, on_apply=increase_mana(101))
 
 class GameState(object):
 	def __init__(self, wizard, boss):
