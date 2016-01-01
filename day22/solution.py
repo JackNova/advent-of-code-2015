@@ -40,8 +40,10 @@ class Boss(object):
 		self.damage = damage
 
 	def attack(self, player):
-		print 'Boss attacks for damage %s' % self.damage
-		player.hit_points -= self.damage
+		strength = self.damage - player.armor
+		hit = strength > 0 and strength or 1
+		print 'Boss attacks for damage %s' % hit
+		player.hit_points -= hit
 
 	def is_alive(self):
 		return self.hit_points > 0
