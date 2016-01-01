@@ -57,8 +57,8 @@ class Wizard(object):
 		self.armor = 0
 		self.spell_selection_strategy = spell_selection_strategy
 
-	def select_spell(self):
-		spell = self.spell_selection_strategy.select_spell()
+	def select_spell(self, game_state=None):
+		spell = self.spell_selection_strategy.select_spell(game_state=game_state)
 		if not spell:
 			self.alive = False
 		else:
@@ -72,7 +72,7 @@ class SelectSpellByPredefinedOrder(object):
 	def __init__(self, spells=[]):
 		self.spells = list(reversed(spells))
 		
-	def select_spell(self):
+	def select_spell(self, game_state=None):
 		spell = self.spells.pop()
 		return spell
 
@@ -182,7 +182,7 @@ def combat(wizard, boss):
 				print 'boss is dead.'
 				return
 
-		spell = wizard.select_spell()
+		spell = wizard.select_spell(game_state=gs)
 		if type(spell) is TimedEffect:
 			print 'Player casts %s' % spell.name
 			spell.cast(gs)
