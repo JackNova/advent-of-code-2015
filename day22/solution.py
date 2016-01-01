@@ -211,7 +211,7 @@ def combat(wizard, boss):
 			print 'wizard is dead.'
 			return
 
-mock_order = [poison, magic_missile, recharge, shield, drain, poison, magic_missile]
+mock_order = [poison(), magic_missile(), recharge(), shield(), drain(), poison(), magic_missile()]
 
 # For example, suppose the player has 10 hit points and 250 mana,
 wizard = Wizard(hit_points=10, mana=250, spell_selection_strategy=SelectSpellByPredefinedOrder(mock_order))
@@ -309,6 +309,13 @@ assert not boss.is_alive() and wizard.is_alive()
 # - Player has 1 hit point, 0 armor, 114 mana
 # - Boss has 2 hit points
 # Poison deals 3 damage. This kills the boss, and the player wins.
+
+mock_order = [recharge(), shield(), drain(), poison(), magic_missile()]
+wizard = Wizard(hit_points=10, mana=250, spell_selection_strategy=SelectSpellByPredefinedOrder(mock_order))
+boss = Boss(hit_points=14, damage=8)
+print '\n\n\n'
+combat(wizard,boss)
+assert not boss.is_alive() and wizard.is_alive()
 
 # You start with 50 hit points and 500 mana points.
 # The boss's actual stats are in your puzzle input.
