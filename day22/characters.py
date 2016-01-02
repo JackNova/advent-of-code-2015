@@ -6,7 +6,6 @@ class Boss(object):
 	def attack(self, player):
 		strength = self.damage - player.armor
 		hit = strength > 0 and strength or 1
-		print 'Boss attacks for damage %s' % hit
 		player.hit_points -= hit
 
 	def is_alive(self):
@@ -30,3 +29,8 @@ class Wizard(object):
 
 	def is_alive(self):
 		return self.alive and self.hit_points > 0
+
+	def launch_spell(self, game_state):
+		spell = self.select_spell(game_state=game_state)
+		spell.use(game_state)
+		return spell

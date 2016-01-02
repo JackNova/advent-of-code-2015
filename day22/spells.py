@@ -29,6 +29,10 @@ class Effect(object):
 			game_state.wizard.mana -= self.cost
 		self.on_apply(game_state)
 
+	def use(self, game_state):
+		self.apply(game_state)
+		
+
 class TimedEffect(Effect):
 	def __init__(self, timer=1, on_end=noop, on_cast=noop, **kwargs):
 		super(TimedEffect, self).__init__(**kwargs)
@@ -39,19 +43,20 @@ class TimedEffect(Effect):
 	def apply(self, game_state):
 		super(TimedEffect, self).apply(game_state)
 		self.timer -= 1
-		print 'its timer is now %s' % self.timer
 		if self.timer <= 0:
 			game_state.spells.remove(self)
-			print '%s ends' % self.name
 			self.on_end(game_state)
 
 	def cast(self, game_state):
 		game_state.wizard.mana -= self.cost
 		self.on_cast(game_state)
 
+	def use(self, game_state):
+		self.cast(game_state)
+		game_state.spells.append(self)
+
 def damage_opponent(amount):
 	def f(game_state):
-		print 'deals %s damage;' % amount
 		game_state.boss.hit_points -= amount
 	return f
 

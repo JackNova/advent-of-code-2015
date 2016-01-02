@@ -80,38 +80,6 @@ def combat(wizard, boss):
 			print 'wizard is dead.'
 			return
 
-mock_order = [poison(), magic_missile(), recharge(), shield(), drain(), poison(), magic_missile()]
-
-# For example, suppose the player has 10 hit points and 250 mana,
-wizard = Wizard(hit_points=10, mana=250, spell_selection_strategy=SelectSpellByPredefinedOrder(mock_order))
-# and that the boss has 13 hit points and 8 damage:
-boss = Boss(hit_points=13, damage=8)
-
-combat(wizard, boss)
-# -- Player turn --
-# - Player has 10 hit points, 0 armor, 250 mana
-# - Boss has 13 hit points
-# Player casts Poison.
-
-# -- Boss turn --
-# - Player has 10 hit points, 0 armor, 77 mana
-# - Boss has 13 hit points
-# Poison deals 3 damage; its timer is now 5.
-# Boss attacks for 8 damage.
-
-# -- Player turn --
-# - Player has 2 hit points, 0 armor, 77 mana
-# - Boss has 10 hit points
-# Poison deals 3 damage; its timer is now 4.
-# Player casts Magic Missile, dealing 4 damage.
-
-# -- Boss turn --
-# - Player has 2 hit points, 0 armor, 24 mana
-# - Boss has 3 hit points
-# Poison deals 3 damage. This kills the boss, and the player wins.
-
-assert not boss.is_alive() and wizard.is_alive()
-
 # Now, suppose the same initial conditions, except that the boss has 14 hit points instead:
 
 # -- Player turn --
