@@ -62,7 +62,6 @@ def damage_opponent(amount):
 
 def heal_me(amount):
 	def f(game_state):
-		print 'hels me %s hit points' % amount
 		game_state.wizard.hit_points+=amount
 	return f
 
@@ -92,7 +91,6 @@ poison = lambda : TimedEffect(name='Poison', cost=173, timer=6, on_apply=damage_
 
 def increase_mana(amount):
 	def f(game_state):
-		print 'provides %s mana' % amount
 		game_state.wizard.mana += amount
 	return f
 
