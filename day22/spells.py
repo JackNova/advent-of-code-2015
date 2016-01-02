@@ -75,8 +75,7 @@ drain = lambda : Effect(name='Drain', cost=73, on_apply=compose_execute_all(dama
 # While it is active, your armor is increased by 7.
 def increase_armor(amount):
 	def f(game_state):
-		print 'increase armor by %s' % amount
-		game_state.wizard.armor += 7
+		game_state.wizard.armor += amount
 	return f
 
 shield = lambda : TimedEffect(name='Shield', cost=113, timer=6, on_cast=increase_armor(7), on_end=increase_armor(-7))
