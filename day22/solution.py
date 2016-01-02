@@ -31,9 +31,6 @@ from game_state import GameState
 # You must have enough mana to cast a spell, and its cost is immediately deducted when you cast it.
 # Your spells are Magic Missile, Drain, Shield, Poison, and Recharge.
 
-
-	def select_spell(self, game_state=None):
-
 def combat(wizard, boss):
 	gs = GameState(wizard, boss)
 
