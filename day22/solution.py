@@ -5,6 +5,7 @@ from spells import Effect, TimedEffect
 from spells import magic_missile, drain, shield, poison, recharge
 from characters import Boss, Wizard
 from strategies import SelectSpellByPredefinedOrder
+from game_state import GameState
 
 # --- Day 22: Wizard Simulator 20XX ---
 
@@ -31,20 +32,7 @@ from strategies import SelectSpellByPredefinedOrder
 # Your spells are Magic Missile, Drain, Shield, Poison, and Recharge.
 
 
-class SelectSpellByPredefinedOrder(object):
-	def __init__(self, spells=[]):
-		self.spells = list(reversed(spells))
-		
 	def select_spell(self, game_state=None):
-		spell = self.spells.pop()
-		return spell
-
-
-class GameState(object):
-	def __init__(self, wizard, boss):
-		self.wizard = wizard
-		self.boss = boss
-		self.spells = []
 
 def combat(wizard, boss):
 	gs = GameState(wizard, boss)
