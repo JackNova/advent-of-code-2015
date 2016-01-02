@@ -31,7 +31,7 @@ class Effect(object):
 
 	def use(self, game_state):
 		self.apply(game_state)
-		
+
 
 class TimedEffect(Effect):
 	def __init__(self, timer=1, on_end=noop, on_cast=noop, **kwargs):
