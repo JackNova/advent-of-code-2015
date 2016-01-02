@@ -4,6 +4,7 @@
 from spells import Effect, TimedEffect
 from spells import magic_missile, drain, shield, poison, recharge
 from characters import Boss, Wizard
+from strategies import SelectSpellByPredefinedOrder
 
 # --- Day 22: Wizard Simulator 20XX ---
 
