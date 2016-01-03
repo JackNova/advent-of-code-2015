@@ -13,11 +13,11 @@ class Boss(object):
 
 
 class Wizard(object):
-	def __init__(self, mana=500, hit_points=100, spell_selection_strategy=None):
+	def __init__(self, mana=500, hit_points=100, armor=0, spell_selection_strategy=None):
 		self.mana = mana
 		self.alive = True
 		self.hit_points = hit_points
-		self.armor = 0
+		self.armor = armor
 		self.spell_selection_strategy = spell_selection_strategy
 
 	def select_spell(self, game_state=None):
