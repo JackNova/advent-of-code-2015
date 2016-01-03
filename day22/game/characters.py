@@ -30,7 +30,7 @@ class Wizard(object):
 	def is_alive(self):
 		return self.alive and self.hit_points > 0 and self.mana > 0
 
-	def launch_spell(self, game_state):
-		spell = self.select_spell(game_state=game_state)
+	def launch_spell(self, game_state, spell=None):
+		spell = spell or self.select_spell(game_state=game_state)
 		spell.use(game_state)
 		return spell
