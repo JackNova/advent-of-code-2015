@@ -94,3 +94,12 @@ def increase_mana(amount):
 	return f
 
 recharge = lambda timer=5 : TimedEffect(name='Recharge', cost=229, timer=timer, on_apply=increase_mana(101))
+
+def get_spell_by_name(name):
+	return {
+		'Magic Missile': magic_missile,
+		'Drain': drain,
+		'Shield': shield,
+		'Poison': poison,
+		'Recharge': recharge
+	}[name]
