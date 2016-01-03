@@ -78,12 +78,12 @@ def increase_armor(amount):
 		game_state.wizard.armor += amount
 	return f
 
-shield = lambda : TimedEffect(name='Shield', cost=113, timer=6, on_cast=increase_armor(7), on_end=increase_armor(-7))
+shield = lambda timer=6 : TimedEffect(name='Shield', cost=113, timer=timer, on_cast=increase_armor(7), on_end=increase_armor(-7))
 
 # Poison costs 173 mana. It starts an effect that lasts for 6 turns.
 # At the start of each turn while it is active, it deals the boss 3 damage.
 
-poison = lambda : TimedEffect(name='Poison', cost=173, timer=6, on_apply=damage_opponent(3))
+poison = lambda timer=6: TimedEffect(name='Poison', cost=173, timer=timer, on_apply=damage_opponent(3))
 
 # Recharge costs 229 mana. It starts an effect that lasts for 5 turns.
 # At the start of each turn while it is active, it gives you 101 new mana.
@@ -93,4 +93,4 @@ def increase_mana(amount):
 		game_state.wizard.mana += amount
 	return f
 
-recharge = lambda : TimedEffect(name='Recharge', cost=229, timer=5, on_apply=increase_mana(101))
+recharge = lambda timer=5 : TimedEffect(name='Recharge', cost=229, timer=timer, on_apply=increase_mana(101))
