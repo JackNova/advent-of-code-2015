@@ -1,10 +1,14 @@
 class GameState(object):
-	def __init__(self, wizard, boss):
+	def __init__(self, wizard, boss, level='easy'):
 		self.wizard = wizard
 		self.boss = boss
 		self.spells = []
+		self.level = level
 
 	def apply_effects(self):
+		if self.level == 'hard':
+			self.wizard.hit_points -= 1
+
 		result = {}
 		for x in list(self.spells):
 			if self.boss.is_alive():
