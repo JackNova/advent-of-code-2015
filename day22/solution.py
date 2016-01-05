@@ -25,7 +25,7 @@ boss_damage = 9
 
 def part_1():
 	wizard = Wizard(hit_points=50, mana=500)
-	boss = Boss(hit_points=51, damage=9)
+	boss = Boss(hit_points=51, damage=boss_damage)
 	gs = represent(GameState(wizard, boss))
 	return lowest_cost_search(gs, successors, is_goal, action_cost)
 
