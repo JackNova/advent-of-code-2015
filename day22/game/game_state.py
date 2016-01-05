@@ -5,8 +5,8 @@ class GameState(object):
 		self.spells = []
 		self.level = level
 
-	def apply_effects(self):
-		if self.level == 'hard':
+	def apply_effects(self, before_who):
+		if self.level == 'hard' and before_who=='before_wizard':
 			self.wizard.hit_points -= 1
 
 		result = {}
@@ -16,11 +16,11 @@ class GameState(object):
 				result[x.name] = x.__dict__
 		return result
 
-def combat(wizard, boss):
-	gs = GameState(wizard, boss)
+def combat(wizard, boss, level='easy'):
+	gs = GameState(wizard, boss, level=level)
 		
 	while True:
-		gs.apply_effects()
+		gs.apply_effects('before_wizard')
 		if not boss.is_alive():
 			return gs
 		
@@ -28,7 +28,7 @@ def combat(wizard, boss):
 		if not boss.is_alive():
 			return gs
 
-		gs.apply_effects()
+		gs.apply_effects('before_boss')
 		if not boss.is_alive():
 			return gs
 

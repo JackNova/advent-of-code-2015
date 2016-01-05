@@ -32,7 +32,7 @@ def part_1():
 def part_2():
 	wizard = Wizard(hit_points=50, mana=500)
 	boss = Boss(hit_points=51, damage=boss_damage)
-	gs = represent(GameState(wizard, boss))
+	gs = represent(GameState(wizard, boss, level='hard'))
 	return lowest_cost_search(gs, successors_2, is_goal, action_cost)
 
 
@@ -140,7 +140,7 @@ def successors_2(game_state):
 		for name, timer in in_use_spells_state:
 			gs.spells.append(get_spell_by_name(name)(timer))
 			
-		gs.apply_effects()
+		gs.apply_effects('before_wizard')
 		if not wizard.is_alive():
 			# can't happen at easy level
 			# print 'wizard is dead by hard level 1'
@@ -161,7 +161,7 @@ def successors_2(game_state):
 			if not boss.is_alive(): # boss killed by spell
 				result[represent(gs)] = candidate_spell.name
 			else:
-				gs.apply_effects()
+				gs.apply_effects('before_boss')
 				if not wizard.is_alive():
 					# print 'wizard is dead by hard level 2'
 					# print represent(gs)
@@ -178,4 +178,4 @@ def successors_2(game_state):
 
 	return result
 
-print part_1()
+print part_2()
