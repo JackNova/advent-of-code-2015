@@ -48,7 +48,9 @@ def successors(game_state):
 	wizard: (hit_points, armor, mana); boss: (hit_points)"""
 	result = {}
 	w, b, in_use_spells_state = game_state
-	spells_in_use = [name for name, timer in in_use_spells_state]
+	spells_in_use = [name for name, timer in in_use_spells_state if timer > 1]
+	# apply_effects gets callend once before launch spell is called
+	# this clears up spells that have just timer=1 left
 	spells = [magic_missile, drain, shield, poison, recharge]
 	available_spells = [s for s in spells if s().name not in spells_in_use]
 
