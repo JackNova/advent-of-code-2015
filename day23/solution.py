@@ -12,10 +12,10 @@ import re
 # (truly, it goes on to remind the reader, a state-of-the-art technology).
 
 class Computer(object):
-	def __init__(self):
+	def __init__(self, a=0, b=0):
 		super(Computer, self).__init__()
 		# The registers are named a and b, can hold any non-negative integer, and begin with a value of 0.
-		self.registers = {'a': 0, 'b': 0}
+		self.registers = {'a': a, 'b': b}
 		self.eip = 0 # pointer to the next instruction
 
 	# The instructions are as follows:
@@ -70,9 +70,9 @@ class Computer(object):
 				operations += 1
 				# print 'state - a: %s, b: %s' % tuple(self.registers.values())
 		except Exception, e:
-			print 'error: %s' % e
+			print '\n\nerror: %s' % e
 			print 'EIP: %s' % self.eip
-			print 'a: %s; b: %s' % tuple(self.registers.values())
+			print 'a: %s; b: %s\n\n' % tuple(self.registers.values())
 
 			
 # All three jump instructions work with an offset relative to that instruction.
@@ -102,3 +102,11 @@ machine_1 = Computer()
 machine_1.compute(input, stop_at=2000)
 
 
+# --- Part Two ---
+
+# The unknown benefactor is very thankful for releasi-- er, helping little Jane Marie with her computer.
+# Definitely not to distract you, what is the value in register b after the program is finished executing
+# if register a starts as 1 instead?
+
+machine_2 = Computer(a=1)
+machine_2.compute(input, stop_at=2000)
